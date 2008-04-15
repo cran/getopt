@@ -75,18 +75,20 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
       this.flag = NA;
       this.argument = NA;
       kv = strsplit(optstring, '=')[[1]];
-      if ( !is.na(kv[1]) ) {
+      if ( !is.na(kv[2]) ) {
         this.flag = kv[1];
         this.argument = kv[2];
+      } else {
+        this.flag = optstring;
       }
 
       rowmatch = grep( this.flag, spec[,col.long.name],fixed=TRUE );
 
-      #short flag is invalid, matches no options
+      #long flag is invalid, matches no options
       if ( length(rowmatch) == 0 ) {
         stop(paste('long flag "', this.flag, '" is invalid', sep=''));
 
-      #short flag is ambiguous, matches too many options
+      #long flag is ambiguous, matches too many options
       } else if ( length(rowmatch) > 1 ) {
         stop(paste('long flag "', this.flag, '" is ambiguous', sep=''));
       }
@@ -101,6 +103,8 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
         } else {
           storage.mode(this.argument) = spec[rowmatch, col.mode];
           result[spec[rowmatch, col.long.name]] = this.argument;
+	  i = i + 1;
+	  next;
         }
 
       #otherwise, we don't have an argument
@@ -118,9 +122,9 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
 
     #short flag(s)
     } else if ( substr(optstring, 1, 1) == '-' ) {
-
       these.flags = strsplit(optstring,'')[[1]];
 
+      done = FALSE;
       for ( j in 2:length(these.flags) ) {
         this.flag = these.flags[j];
         rowmatch = grep( this.flag, spec[,col.short.name],fixed=TRUE );
@@ -140,41 +144,77 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
         #short flag has no argument, flag it as present
         } else if ( spec[rowmatch,col.has.argument] == flag.no.argument ) {
           result[spec[rowmatch, col.long.name]] = TRUE;
+	  done = TRUE;
 
         #can't definitively process this flag yet, need to see if next option is an argument or not
         } else {
           result[spec[rowmatch, col.long.name]] = TRUE;
           current.flag = rowmatch;
+          done = FALSE;
         }
       }
-    #invalid opt
-    } else {
-      stop(paste('"', optstring, '" is not a valid option', sep=''));
+      if ( done ) {
+        i = i + 1;
+        next;
+      }
     }
+
+    #invalid opt
+    if ( current.flag == 0 ) {
+      stop(paste('"', optstring, '" is not a valid option, or does not support an argument', sep=''));
 
     # some dangling flag, handle it
-    if ( current.flag > 0 & length(opt) > i+1 ) {
-      peek.optstring = opt[i+1];
-      #got an argument.  attach it, increment the index, and move on to the next option.  we don't allow arguments beginning with '-'
-      if ( substr(peek.optstring, 1, 1) != '-' ) {
-        storage.mode(peek.optstring) = spec[current.flag, col.mode];
-        result[spec[current.flag, col.long.name]] = peek.optstring;
-        i = i+1;
+    } else if ( current.flag > 0 ) {
+      if ( length(opt) > i ) {
+        peek.optstring = opt[i + 1];
+        #got an argument.  attach it, increment the index, and move on to the next option.  we don't allow arguments beginning with '-'.
+        if ( substr(peek.optstring, 1, 1) != '-' ) {
+          storage.mode(peek.optstring) = spec[current.flag, col.mode];
+          result[spec[current.flag, col.long.name]] = peek.optstring;
+          i = i + 1;
 
-      #no argument
-      } else {
-        #if we require an argument, bail out
-        if ( spec[current.flag, col.has.argument] == flag.required.argument ) {
-          stop(paste('flag "', this.flag, '" requires an argument', sep=''));
+	#a lone dash
+	} else if ( substr(peek.optstring, 1, 1) == '-' & length(strsplit(peek.optstring,'')[[1]]) == 1 ) {
+          storage.mode(peek.optstring) = spec[current.flag, col.mode];
+          result[spec[current.flag, col.long.name]] = peek.optstring;
+          i = i + 1;
 
-        #otherwise set flag as present.
+        #no argument
         } else {
-          result[spec[current.flag, col.long.name]] = TRUE;
+          #if we require an argument, bail out
+          if ( spec[current.flag, col.has.argument] == flag.required.argument ) {
+            stop(paste('flag "', this.flag, '" requires an argument', sep=''));
+
+          #otherwise set flag as present.
+          } else if ( spec[current.flag, col.has.argument] == flag.optional.argument ) {
+  	    x = TRUE;
+  	    storage.mode(x) = spec[current.flag, col.mode];
+            result[spec[current.flag, col.long.name]] = x;
+          } else {
+            stop("this should never happen (1).  please inform the author.");
+	  }
         }
+      #trailing flag without required argument
+      } else if ( spec[current.flag, col.has.argument] == flag.required.argument ) {
+        stop(paste('flag "', this.flag, '" requires an argument', sep=''));
+
+      #trailing flag without optional argument
+      } else if ( spec[current.flag, col.has.argument] == flag.optional.argument ) {
+        x = TRUE;
+        storage.mode(x) = spec[current.flag, col.mode];
+        result[spec[current.flag, col.long.name]] = x;
+
+      #trailing flag without argument
+      } else if ( spec[current.flag, col.has.argument] == flag.no.argument ) {
+        x = TRUE;
+        storage.mode(x) = spec[current.flag, col.mode];
+        result[spec[current.flag, col.long.name]] = x;
+      } else {
+        stop("this should never happen (2).  please inform the author.");
       }
+    #no dangling flag, nothing to do.
+    } else {
     }
-
-
 
     i = i+1;
   }

@@ -78,7 +78,28 @@ corresponding \emph{argument}.
   This is used internally to debug the getopt() function itself.
   }
 }
-\details{ }
+\details{
+Current issues:
+
+1. No support for multiple, identical flags, e.g. for "-m 3 -v 5 -v", the
+trailing "-v" overrides the preceding "-v 5", result is v=TRUE (or equivalent
+typecast).
+
+2. No support for multi-valued flags, e.g.
+"--libpath=/usr/local/lib --libpath=/tmp/foo".
+
+3. No support for lists, e.g. "--define os=linux --define os=redhat"
+would set result$os$linux=TRUE and result$os$redhat=TRUE.
+
+4. No support for incremental, argument-less flags, e.g. "/path/to/script -vvv"
+should set v=3.
+
+5. Need more unit tests (see end of examples section).
+
+6. Support partial-but-unique string match on options, e.g. "--verb" and
+"--verbose" both match long flag "--verbose".
+
+}
 \value{ }
 \references{ }
 \author{ Allen Day }
@@ -121,6 +142,38 @@ cat(paste(rnorm(opt$count,mean=opt$mean,sd=opt$sd),collapse="\n"));
 cat("\n");
 
 #signal success and exit.
-q(status=0);
+#q(status=0);
+
+### END ###
+#regression tests follow.  not part of the example.
+spec = c(
+  'verbose', 'v', 2, "integer",
+  'help'   , 'h', 0, "logical",
+  'dummy1' , 'd', 0, "logical",
+  'dummy2' , 'e', 2, "logical",
+  'count'  , 'c', 1, "integer",
+  'mean'   , 'm', 1, "double",
+  'sd'     , 's', 1, "double",
+  'output' , 'O', 1, "character"
+);
+opt = getopt(spec, c('-v', '-m', '3'));
+opt = getopt(spec, c('-m', '3', '-v'));
+opt = getopt(spec, c('-m', '3', '-v', '2', '-v'));
+opt = getopt(spec, c('-O', '-', '-m', '3'));
+opt = getopt(spec, c('-m', '3', '-O', '-'));
+opt = getopt(spec, c('-de'));
+opt = getopt(spec, c('-ed'));
+opt = getopt(spec, c('-d'));
+opt = getopt(spec, c('-e', '1'));
+opt = getopt(spec, c('-de', '1'));
+opt = getopt(spec, c('--verbose'));
+opt = getopt(spec, c('--help'));
+opt = getopt(spec, c('--verbose', '--help'));
+opt = getopt(spec, c('--verbose', '--mean', '5'));
+opt = getopt(spec, c('--mean=5'));
+opt = getopt(spec, c('--verbose', '--mean=5'));
+opt = getopt(spec, c('--verbose', '--mean=5', '--sd', '5'));
+opt = getopt(spec, c('--mean=5', '--sd', '5', '--verbose'));
+opt = getopt(spec, c('--mean=5', '--verbose', '--sd', '5'));
 }
 \keyword{ data }% at least one, from doc/KEYWORDS
