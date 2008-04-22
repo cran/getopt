@@ -33,6 +33,12 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
   # column 4: mode of argument.  one of "logical", "integer", "double",
   # "complex", "character"
 
+
+  #littler compatibility - map argv vector to opt
+  if ( length(opt) == 0 && exists("argv") ) {
+    opt = argv;
+  }
+
   ncol=4;
   col.long.name    = 1;
   col.short.name   = 2;

@@ -123,7 +123,7 @@ if ( !is.null(opt$help) ) {
   #get the script name (only works when invoked with Rscript).
   self = commandArgs()[1];
   #print a friendly message and exit with a non-zero error code
-  cat(paste("Usage: ",self," [-[gh]] [-[-mean|m] <mean>] [-[-sd|s] <sd>] [-[-count|c] <count>]\n",sep=""));
+  cat(paste("Usage: ",self," [-[vh]] [-[-mean|m] <mean>] [-[-sd|s] <sd>] [-[-count|c] <count>]\n",sep=""));
   q(status=1);
 }
 
