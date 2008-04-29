@@ -1,4 +1,4 @@
-getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
+getopt = function (spec=NULL,opt=commandArgs(TRUE),command=strsplit(commandArgs(FALSE)[4],"=")[[1]][2],usage=FALSE,debug=FALSE) {
 
   # notes on naming convention:
 
@@ -21,7 +21,7 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
   # "-", but only the final "short flag" is able to have a corresponding
   # "argument".
 
-  #spec contains 4 columns.
+  #spec contains at least 4 columns, as many as 5 columns.
   #
   # column 1: long name of flag
   #
@@ -32,18 +32,22 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
   #
   # column 4: mode of argument.  one of "logical", "integer", "double",
   # "complex", "character"
+  #
+  # column 5 (optional): description of option.
+  #
 
-
-  #littler compatibility - map argv vector to opt
-  if ( length(opt) == 0 && exists("argv") ) {
-    opt = argv;
+  # littler compatibility - map argv vector to opt
+  if (exists("argv", where = .GlobalEnv, inherits = FALSE)) {
+    opt = get("argv", envir = .GlobalEnv);
   }
 
   ncol=4;
+  maxcol=6;
   col.long.name    = 1;
   col.short.name   = 2;
   col.has.argument = 3;
   col.mode         = 4;
+  col.description  = 5;
 
   flag.no.argument = 0;
   flag.required.argument = 1;
@@ -51,21 +55,76 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
 
   result = list();
 
+  #no spec.  fail.
   if ( is.null(spec) ) {
     stop('argument "spec" must be non-null.');
+
+  #spec is not a matrix.  attempt to coerce, if possible.  issue a warning.
   } else if ( !is.matrix(spec) ) {
-    spec = matrix( spec, ncol=ncol, byrow=TRUE );
+    if ( length(spec)/4 == as.integer(length(spec)/4) ) {
+      warning('argument "spec" was coerced to a 4-column (row-major) matrix.  use a matrix to prevent the coercion');
+      spec = matrix( spec, ncol=ncol, byrow=TRUE );
+    } else {
+      stop('argument "spec" must be a matrix, or a character vector with length divisible by 4, rtfm.');
+    }
+
+  #spec is a matrix, but it has too few columns.
+  } else if ( dim(spec)[2] < ncol ) {
+    stop(paste('"spec" should have at least ",ncol," columns.',sep=''));
+
+  #spec is a matrix, but it has too many columns.
+  } else if ( dim(spec)[2] > maxcol ) {
+    stop(paste('"spec" should have no more than ",maxcol," columns.',sep=''));
+
+  #spec is a matrix, and it has some optional columns.
   } else if ( dim(spec)[2] != ncol ) {
-    stop(paste('"spec" should have ",ncol," columns.',sep=''));
+    ncol = dim(spec)[2];
   }
+
+  #sanity check.  make sure long names are unique, and short names are unique.
+  if ( length(unique(spec[,col.long.name])) != length(spec[,col.long.name]) ) {
+    stop(paste('redundant long names for flags (column ',col.long.name,').',sep=''));
+  }
+  if ( length(unique(spec[,col.short.name])) != length(spec[,col.short.name]) ) {
+    stop(paste('redundant short names for flags (column ',col.short.name,').',sep=''));
+  }
+
+  # if usage=TRUE, don't process opt, but generate a usage string from the data in spec
+  if ( usage ) {
+    ret = '';
+    ret = paste(ret,"Usage: ",command,sep='');
+    for ( j in 1:(dim(spec))[1] ) {
+      ret = paste(ret,' [-[-',spec[j,col.long.name],'|',spec[j,col.short.name],']',sep='');
+      if (spec[j,col.has.argument] == flag.no.argument) {
+        ret = paste(ret,']',sep='');
+      } else if (spec[j,col.has.argument] == flag.required.argument) {
+        ret = paste(ret,' <',spec[j,col.mode],'>]',sep='');
+      } else if (spec[j,col.has.argument] == flag.optional.argument) {
+        ret = paste(ret,' [<',spec[j,col.mode],'>]]',sep='');
+      }
+    }
+    # include usage strings
+    if ( ncol >= 5 ) {
+      max.long = max(apply(cbind(spec[,col.long.name]),1,function(x)length(strsplit(x,'')[[1]])));
+      ret = paste(ret,"\n",sep='');
+      for (j in 1:(dim(spec))[1] ) {
+        ret = paste(ret,sprintf(paste("    -%s|--%-",max.long,"s    %s\n",sep=''),
+          spec[j,col.short.name],spec[j,col.long.name],spec[j,col.description]
+        ),sep='');
+      }
+    }
+    else {
+      ret = paste(ret,"\n",sep='');
+    }
+    return(ret);
+  }
+
   #XXX check spec validity here.  e.g. column three should be convertible to integer
 
   i = 1;
 
   while ( i <= length(opt) ) {
-    if ( debug ) {
-      print(paste("processing",opt[i]));
-    }
+    if ( debug ) print(paste("processing",opt[i]));
 
     current.flag = 0; #XXX use NA
     optstring = opt[i];
@@ -73,9 +132,8 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
 
     #long flag
     if ( substr(optstring, 1, 2) == '--' ) {
-      if ( debug ) {
-        print(paste("  long option:",opt[i]));
-      }
+      if ( debug ) print(paste("  long option:",opt[i]));
+
       optstring = substring(optstring,3);
 
       this.flag = NA;
@@ -128,6 +186,8 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
 
     #short flag(s)
     } else if ( substr(optstring, 1, 1) == '-' ) {
+      if ( debug ) print(paste("  short option:",opt[i]));
+
       these.flags = strsplit(optstring,'')[[1]];
 
       done = FALSE;
@@ -171,28 +231,39 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),debug=FALSE) {
 
     # some dangling flag, handle it
     } else if ( current.flag > 0 ) {
+      if ( debug ) print('    dangling flag');
       if ( length(opt) > i ) {
         peek.optstring = opt[i + 1];
+        if ( debug ) print(paste('      peeking ahead at: "',peek.optstring,'"',sep=''));
+
         #got an argument.  attach it, increment the index, and move on to the next option.  we don't allow arguments beginning with '-'.
         if ( substr(peek.optstring, 1, 1) != '-' ) {
+          if ( debug ) print('        consuming argument');
+
           storage.mode(peek.optstring) = spec[current.flag, col.mode];
           result[spec[current.flag, col.long.name]] = peek.optstring;
           i = i + 1;
 
 	#a lone dash
 	} else if ( substr(peek.optstring, 1, 1) == '-' & length(strsplit(peek.optstring,'')[[1]]) == 1 ) {
+          if ( debug ) print('        consuming "lone dash" argument');
           storage.mode(peek.optstring) = spec[current.flag, col.mode];
           result[spec[current.flag, col.long.name]] = peek.optstring;
           i = i + 1;
 
         #no argument
         } else {
+          if ( debug ) print('        no argument!');
+
           #if we require an argument, bail out
           if ( spec[current.flag, col.has.argument] == flag.required.argument ) {
             stop(paste('flag "', this.flag, '" requires an argument', sep=''));
 
           #otherwise set flag as present.
-          } else if ( spec[current.flag, col.has.argument] == flag.optional.argument ) {
+          } else if (
+	    spec[current.flag, col.has.argument] == flag.optional.argument |
+	    spec[current.flag, col.has.argument] == flag.no.argument 
+	  ) {
   	    x = TRUE;
   	    storage.mode(x) = spec[current.flag, col.mode];
             result[spec[current.flag, col.long.name]] = x;

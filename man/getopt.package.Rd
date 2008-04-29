@@ -35,13 +35,13 @@ subsequent \emph{option}.  \emph{short flags} may be bundled together, sharing
 a single leading ``-'', but only the final \emph{short flag} is able to have a
 corresponding \emph{argument}.
 }
-\usage{getopt( spec=NULL, opt=commandArgs(TRUE), debug=FALSE )}
+\usage{getopt( spec=NULL, opt=commandArgs(TRUE), command=strsplit(commandArgs(FALSE)[4],"=")[[1]][2], usage=FALSE, debug=FALSE )}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{spec}{
   The getopt specification, or spec of what options are considered valid.  The
-  specification must be either a 4-column \link{matrix}, or a \link{character}
-  \link{vector} coercible into a 4-column \link{matrix} using
+  specification must be either a 4-5 column \link{matrix}, or a \link{character}
+  \link{vector} coercible into a 4 column \link{matrix} using
   \link{matrix}(x,ncol=4,byrow=TRUE) command.  The \link{matrix}/\link{vector}
   contains:
 
@@ -59,6 +59,8 @@ corresponding \emph{argument}.
     \link{logical}, \link{integer}, \link{double}, \link{complex},
     \link{character}.
 
+    Column 5 (optional): A brief description of the purpose of the option.
+
   The terms \emph{option}, \emph{flag}, \emph{long flag}, \emph{short flag},
   and \emph{argument} have very specific meanings in the context of this
   document.  Read the ``Description'' section for definitions.
@@ -73,6 +75,14 @@ corresponding \emph{argument}.
   arguments after the name of the R script file.
 
   Read about \link{commandArgs} and \link{Rscript} to learn more.
+  }
+  \item{command}{
+  The string to use in the usage message as the name of the script.  See
+  argument \emph{usage}.
+  }
+  \item{usage}{
+  If TRUE, argument \emph{opt} will be ignored and a usage statement (character
+  string) will be generated and returned from \emph{spec}.
   }
   \item{debug}{
   This is used internally to debug the getopt() function itself.
@@ -175,5 +185,17 @@ opt = getopt(spec, c('--verbose', '--mean=5'));
 opt = getopt(spec, c('--verbose', '--mean=5', '--sd', '5'));
 opt = getopt(spec, c('--mean=5', '--sd', '5', '--verbose'));
 opt = getopt(spec, c('--mean=5', '--verbose', '--sd', '5'));
+
+spec = c(
+  'date'     , 'd', 1, "character",
+  'help'     , 'h', 0, "logical",
+  'getdata'  , 'g', 0, "logical",
+  'market'   , 'm', 1, "character",
+  'threshold', 't', 1, "double"
+);
+opt = getopt(spec, c('--date','20080421','--market','YM','--getdata'));
+opt = getopt(spec, c('--date','20080421','--getdata','--market','YM'));
+opt = getopt(spec, c('--date','20080421','--getdata','--market','YM'),usage=TRUE,debug=TRUE);
+print(getopt(spec, c('--date','20080421','--getdata','--market','YM'),usage=TRUE));
 }
 \keyword{ data }% at least one, from doc/KEYWORDS
