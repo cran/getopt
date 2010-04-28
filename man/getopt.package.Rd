@@ -109,6 +109,10 @@ should set v=3.
 6. Support partial-but-unique string match on options, e.g. "--verb" and
 "--verbose" both match long flag "--verbose".
 
+7. No support for mixing in positional arguments or extra arguments that don't
+match any options.  For example, you can't do "my.R --arg1 1 foo bar baz" and
+recover "foo", "bar", "baz" as a list.  Likewise for "my.R foo --arg1 1 bar baz".
+
 }
 \value{ }
 \references{ }
@@ -166,6 +170,7 @@ spec = c(
   'sd'     , 's', 1, "double",
   'output' , 'O', 1, "character"
 );
+opt = getopt(spec, c('-c', '-1', '-m', '-1.2'));
 opt = getopt(spec, c('-v', '-m', '3'));
 opt = getopt(spec, c('-m', '3', '-v'));
 opt = getopt(spec, c('-m', '3', '-v', '2', '-v'));

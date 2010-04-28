@@ -54,6 +54,7 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),command=strsplit(commandArgs(
   flag.optional.argument = 2;
 
   result = list();
+  result$ARGS = vector(mode="character");
 
   #no spec.  fail.
   if ( is.null(spec) ) {
@@ -85,7 +86,7 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),command=strsplit(commandArgs(
   if ( length(unique(spec[,col.long.name])) != length(spec[,col.long.name]) ) {
     stop(paste('redundant long names for flags (column ',col.long.name,').',sep=''));
   }
-  if ( length(unique(spec[,col.short.name])) != length(spec[,col.short.name]) ) {
+  if ( length(na.omit(unique(spec[,col.short.name]))) != length(na.omit(spec[,col.short.name])) ) {
     stop(paste('redundant short names for flags (column ',col.short.name,').',sep=''));
   }
 
@@ -228,6 +229,9 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),command=strsplit(commandArgs(
     #invalid opt
     if ( current.flag == 0 ) {
       stop(paste('"', optstring, '" is not a valid option, or does not support an argument', sep=''));
+      #TBD support for positional args
+      #if ( debug ) print(paste('"', optstring, '" not a valid option.  It is appended to getopt(...)$ARGS', sep=''));
+      #result$ARGS = append(result$ARGS, optstring);
 
     # some dangling flag, handle it
     } else if ( current.flag > 0 ) {
@@ -236,9 +240,21 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),command=strsplit(commandArgs(
         peek.optstring = opt[i + 1];
         if ( debug ) print(paste('      peeking ahead at: "',peek.optstring,'"',sep=''));
 
-        #got an argument.  attach it, increment the index, and move on to the next option.  we don't allow arguments beginning with '-'.
-        if ( substr(peek.optstring, 1, 1) != '-' ) {
-          if ( debug ) print('        consuming argument');
+        #got an argument.  attach it, increment the index, and move on to the next option.  we don't allow arguments beginning with '-' UNLESS
+	#specfile indicates the value is an "integer" or "double", in which case we allow a leading dash (and verify trailing digits/decimals).
+        if ( substr(peek.optstring, 1, 1) != '-' |
+	  #match negative double
+	  ( substr(peek.optstring, 1, 1) == '-'
+	  & regexpr('^-[0123456789]*\\.?[0123456789]+$',peek.optstring) > 0
+	  & spec[current.flag, col.mode]== 'double'
+	  ) |
+	  #match negative integer
+	  ( substr(peek.optstring, 1, 1) == '-'
+	  & regexpr('^-[0123456789]+$',peek.optstring) > 0
+	  & spec[current.flag, col.mode]== 'integer'
+	  )
+	) {
+          if ( debug ) print(paste('        consuming argument *',peek.optstring,'*',sep=''));
 
           storage.mode(peek.optstring) = spec[current.flag, col.mode];
           result[spec[current.flag, col.long.name]] = peek.optstring;
