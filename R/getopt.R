@@ -142,7 +142,7 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),command=strsplit(commandArgs(
       kv = strsplit(optstring, '=')[[1]];
       if ( !is.na(kv[2]) ) {
         this.flag = kv[1];
-        this.argument = kv[2];
+        this.argument = paste(kv[-1], collapse="=");
       } else {
         this.flag = optstring;
       }

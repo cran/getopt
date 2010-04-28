@@ -200,7 +200,7 @@ spec = c(
 );
 opt = getopt(spec, c('--date','20080421','--market','YM','--getdata'));
 opt = getopt(spec, c('--date','20080421','--getdata','--market','YM'));
-opt = getopt(spec, c('--date','20080421','--getdata','--market','YM'),usage=TRUE,debug=TRUE);
+opt = getopt(spec, c('--date','20080421','--getdata','--market','YM'),debug=TRUE);
 print(getopt(spec, c('--date','20080421','--getdata','--market','YM'),usage=TRUE));
 }
 \keyword{ data }% at least one, from doc/KEYWORDS
