@@ -13,10 +13,10 @@ test_that("getopt works as expected", {
       'sd'     , 's', 1, "double",
       'output' , 'O', 1, "character"
     ), ncol=4, byrow=TRUE);
-    sort_list <- function(unsorted_list) { 
+    sort_list <- function(unsorted_list) {
         for(ii in seq(along=unsorted_list)) {
             if(is.list(unsorted_list[[ii]])) {
-                unsorted_list[[ii]] <- unsorted_list[[ii]][sort(names(unsorted_list[[ii]]))]
+                unsorted_list[[ii]] <- sort_list(unsorted_list[[ii]])
             }
         }
         unsorted_list[sort(names(unsorted_list))] 

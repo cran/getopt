@@ -114,10 +114,7 @@ match any options.  For example, you can't do "my.R --arg1 1 foo bar baz" and
 recover "foo", "bar", "baz" as a list.  Likewise for "my.R foo --arg1 1 bar baz".
 
 }
-\value{ }
-\references{ }
 \author{ Allen Day }
-\note{ }
 \seealso{ \code{\link{getopt}} }
 \examples{
 #!/path/to/Rscript
