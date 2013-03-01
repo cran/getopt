@@ -1,7 +1,7 @@
 Package: getopt
 Type: Package
 Title: C-like getopt behavior.
-Version: 1.19.0
+Version: 1.19.1
 Author: Allen Day Contributions from Trevor L Davis
 Maintainer: Trevor L Davis <trevor.l.davis@stanford.edu>
 Description: Package designed to be used with Rscript to write ``#!''
@@ -14,7 +14,8 @@ Suggests: testthat
 Collate: 'getopt.R'
 Repository: CRAN
 Repository/R-Forge/Project: optparse
-Repository/R-Forge/Revision: 103
-Repository/R-Forge/DateTimeStamp: 2012-11-13 01:06:02
-Date/Publication: 2012-11-18 09:10:57
-Packaged: 2012-11-13 03:24:09 UTC; rforge
+Repository/R-Forge/Revision: 116
+Repository/R-Forge/DateTimeStamp: 2013-03-01 22:49:51
+Date/Publication: 2013-03-04 07:40:03
+Packaged: 2013-03-01 23:15:17 UTC; rforge
+NeedsCompilation: no

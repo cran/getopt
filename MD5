@@ -1,8 +1,8 @@
-20145b1b405ed63a01fc46365cd98acb *DESCRIPTION
+bf4ef0ccdbd56ea20320566ce81af357 *DESCRIPTION
 aebacd1e62ffaff4ccc2243969fd06b0 *NAMESPACE
-b6f58565c3f316f6521a424f71913930 *NEWS
-ade5bad6aeec7c30c9ef1dafc4091456 *R/getopt.R
-9189748f22940388cd2c2db25a5751cd *inst/tests/test-getopt.R
+96424b4d8b4cc2bdeb2031a954658e77 *NEWS
+30b673c833af7a333dab2354bba1ca38 *R/getopt.R
+7118628e7508f453e19082f20ed4991e *inst/tests/test-getopt.R
 f692f19f2e09013c3d075f6d322473c0 *man/get_Rscript_filename.Rd
 7476469866359a385df8551bf79b1cce *man/getopt.Rd
 71912d95683c1891b4523acbc554da5e *tests/run-all.R

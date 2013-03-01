@@ -1,5 +1,13 @@
 library("testthat")
 library("getopt")
+sort_list <- function(unsorted_list) {
+    for(ii in seq(along=unsorted_list)) {
+        if(is.list(unsorted_list[[ii]])) {
+            unsorted_list[[ii]] <- sort_list(unsorted_list[[ii]])
+        }
+    }
+    unsorted_list[sort(names(unsorted_list))] 
+}
 
 context("Testing getopt")
 test_that("getopt works as expected", {
@@ -13,14 +21,6 @@ test_that("getopt works as expected", {
       'sd'     , 's', 1, "double",
       'output' , 'O', 1, "character"
     ), ncol=4, byrow=TRUE);
-    sort_list <- function(unsorted_list) {
-        for(ii in seq(along=unsorted_list)) {
-            if(is.list(unsorted_list[[ii]])) {
-                unsorted_list[[ii]] <- sort_list(unsorted_list[[ii]])
-            }
-        }
-        unsorted_list[sort(names(unsorted_list))] 
-    }
     expect_equal(sort_list(getopt(spec, c('-c', '-1', '-m', '-1.2'))),
                     sort_list(list(ARGS=character(0), count=-1, mean=-1.2)));
     expect_equal(sort_list(getopt(spec, c('-v', '-m', '3'))),
@@ -68,5 +68,17 @@ test_that("getopt works as expected", {
             prints_text("processing "));
     expect_that(print(getopt(spec, c('--date','20080421','--getdata','--market','YM'),usage=TRUE)),
             prints_text("Usage: "));
+})
+test_that("don't throw error if multiple matches match one argument fully", {
+    # test if partial name matches fully, 
+    # still throw error if multiple matches and doesn't match both fully
+    # feature request from Jonas Zimmermann
+    spec = c(
+      'foo'      , 'f', 0, "logical",
+      'foobar'   , 'b', 0, "logical",
+      'biz'      , 'z', 0, "logical"
+      )
+    expect_that(getopt(spec, c('--fo')), throws_error())
+    expect_equal(getopt(spec, c('--foo')), sort_list(list(ARGS=character(0), foo=TRUE)))
 })
 

@@ -282,7 +282,11 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),command=get_Rscript_filename(
 
       #long flag is ambiguous, matches too many options
       } else if ( length(rowmatch) > 1 ) {
-        stop(paste('long flag "', this.flag, '" is ambiguous', sep=''));
+        # check if there is an exact match and use that
+        rowmatch = which(this.flag == spec[,col.long.name])
+        if(length(rowmatch) == 0) {
+          stop(paste('long flag "', this.flag, '" is ambiguous', sep=''));
+        }
       }
 
       #if we have an argument
