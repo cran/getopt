@@ -1,8 +1,11 @@
-bf4ef0ccdbd56ea20320566ce81af357 *DESCRIPTION
-aebacd1e62ffaff4ccc2243969fd06b0 *NAMESPACE
-96424b4d8b4cc2bdeb2031a954658e77 *NEWS
-30b673c833af7a333dab2354bba1ca38 *R/getopt.R
-7118628e7508f453e19082f20ed4991e *inst/tests/test-getopt.R
+b234ee4d69f5fce4486a80fdaf4a4263 *COPYING
+08656e23fb8bd07c69f68e7d5443f05a *DESCRIPTION
+dd396c987d24860d37a42fc7541e77b5 *NAMESPACE
+f651db85028ffd75fd6e59b496a413fe *NEWS
+244e1fed9d7aaaffaf66976576c06f9d *R/getopt.R
+e374b85f40f7549cbdb66c9065c1f1ec *R/utils.R
+252fbb7071cd1cc555ca81c8f537a6b9 *inst/tests/test-getopt.R
 f692f19f2e09013c3d075f6d322473c0 *man/get_Rscript_filename.Rd
-7476469866359a385df8551bf79b1cce *man/getopt.Rd
+7edc52e347b20c53819d16cef5ff8086 *man/getopt.Rd
+21469f658334a9ef307e44fcd49a1710 *man/sort_list.Rd
 71912d95683c1891b4523acbc554da5e *tests/run-all.R

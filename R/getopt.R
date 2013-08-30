@@ -1,3 +1,19 @@
+# Copyright (c) 2008-2010 Allen Day
+# Copyright (c) 2011-2013 Trevor L. Davis <trevor.l.davis@stanford.edu>  
+#  
+#  This file is free software: you may copy, redistribute and/or modify it  
+#  under the terms of the GNU General Public License as published by the  
+#  Free Software Foundation, either version 2 of the License, or (at your  
+#  option) any later version.  
+#  
+#  This file is distributed in the hope that it will be useful, but  
+#  WITHOUT ANY WARRANTY; without even the implied warranty of  
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+#  General Public License for more details.  
+#  
+#  You should have received a copy of the GNU General Public License  
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+
 #' C-like getopt behavior
 #' 
 #' getopt is primarily intended to be used with ``\link{Rscript}''.  It
@@ -33,13 +49,14 @@
 #' sharing a single leading ``-'', but only the final \emph{short flag} is able
 #' to have a corresponding \emph{argument}.
 #'
-#' Many users wonder whether they should use the getopt package or optparse package
+#' Many users wonder whether they should use the getopt package, optparse package, 
+#' or argparse package.
 #' Here is some of the major differences:
 #'
 #' Features available in \code{getopt} unavailable in \code{optparse}
 #'
 #' 1. As well as allowing one to specify options that take either
-#'      no argument or a required argument,
+#'      no argument or a required argument like \code{optparse},
 #'    \code{getopt} also allows one to specify option with an optional argument.
 #' 
 #' Some features implemented in \code{optparse} package unavailable in \code{getopt}
@@ -52,9 +69,9 @@
 #' 3. Option to specify default arguments for options as well the
 #'    variable name to store option values
 #'
-#' There is also new package \code{argparse} which contains all the features
-#' of both getopt and optparse but which has a dependency on Python (>= 2.7)
-#' and has not been used in production for a few years 
+#' There is also new package \code{argparse} introduced in 2012 which contains
+#' all the features of both getopt and optparse but which has a dependency on
+#' Python 2.7 or 3.2+ and has not been used in production since 2008 or 2009
 #' like the getopt and optparse packages.
 #'
 #' Some Features unlikely to be implemented in \code{getopt}:
@@ -99,6 +116,7 @@
 #' \link{storage.mode}.  A multi-\link{character} string.  This only considered
 #' for same-row Column 3 values of 1,2.  Possible values: \link{logical},
 #' \link{integer}, \link{double}, \link{complex}, \link{character}.
+#' If \link{numeric} is encountered then it will be converted to double.
 #' 
 #' Column 5 (optional): A brief description of the purpose of the option.
 #' 
@@ -216,6 +234,8 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),command=get_Rscript_filename(
   if ( length(na.omit(unique(spec[,col.short.name]))) != length(na.omit(spec[,col.short.name])) ) {
     stop(paste('redundant short names for flags (column ',col.short.name,').',sep=''));
   }
+  # convert numeric type to double type
+  spec[,4] <- gsub("numeric", "double", spec[,4])
 
   # if usage=TRUE, don't process opt, but generate a usage string from the data in spec
   if ( usage ) {
@@ -445,19 +465,4 @@ getopt = function (spec=NULL,opt=commandArgs(TRUE),command=get_Rscript_filename(
     i = i+1;
   }
   return(result);
-}
-
-#' Returns file name of calling Rscript
-#'
-#' \code{get_Rscript_filename} returns the file name of calling Rscript 
-#' @return A string with the filename of the calling script.
-#'      If not found (i.e. you are in a interactive session) returns NA.
-#'
-#' @export
-get_Rscript_filename <- function() {
-    prog <- sub("--file=", "", grep("--file=", commandArgs(), value=TRUE)[1])
-    if( .Platform$OS.type == "windows") { 
-        prog <- gsub("\\\\", "\\\\\\\\", prog)
-    }
-    prog
 }

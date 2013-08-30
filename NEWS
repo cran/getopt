@@ -1,3 +1,11 @@
+getopt 1.20.0
+=============
+* Type of "numeric" in spec automatically cast to "double".  
+  Previously users might have had an error passing negative numbers if they
+  accidentally specified "numeric" instead of "double".
+* Project website moved to https://github.com/trevorld/getopt
+* Exports new function ``sort_list``.
+
 getopt 1.19.1
 =============
 * If a passed in option matches multiple options in the getopt specification but matches one exactly
