@@ -1,3 +1,12 @@
+getopt 1.20.1
+=============
+* Now explicitly imports the ``na.omit`` method from the ``stats`` package.
+  Thanks Derrick Oswald for bug report.
+* Improved parsing for negative numbers preceded by a space instead of a '=' sign.  
+  Thanks Roman Zenka for improved regular expression.
+* Slightly more informative error message if `storage.mode` coercion results in an `NA`.
+  Thanks Roman Zenka for suggestion.
+
 getopt 1.20.0
 =============
 * Type of "numeric" in spec automatically cast to "double".  

@@ -1,11 +1,12 @@
 Package: getopt
 Type: Package
-Title: C-like getopt behavior.
-Version: 1.20.0
+Title: C-Like 'getopt' Behavior
+Version: 1.20.1
 Author: Allen Day.
-    Contributions from Trevor L Davis.
-Maintainer: Trevor L Davis <trevor.l.davis@stanford.edu>
+    Contributions from Trevor L Davis and Roman Zenka.
+Maintainer: Trevor L Davis <trevor.l.davis@gmail.com>
 URL: https://github.com/trevorld/getopt
+Imports: stats
 BugReports: https://github.com/trevorld/getopt/issues
 Description: Package designed to be used with Rscript to write
     ``#!'' shebang scripts that accept short and long flags/options.
@@ -14,8 +15,8 @@ Description: Package designed to be used with Rscript to write
     support for default values, positional argument support, etc.
 License: GPL (>= 2)
 Suggests: testthat
-Collate: 'getopt.R' 'utils.R'
-Packaged: 2013-08-30 07:02:26 UTC; trevorld
+RoxygenNote: 6.0.1
 NeedsCompilation: no
+Packaged: 2017-11-29 22:23:04 UTC; trevorld
 Repository: CRAN
-Date/Publication: 2013-08-30 10:36:29
+Date/Publication: 2017-11-29 23:47:17 UTC
