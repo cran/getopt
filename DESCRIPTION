@@ -1,7 +1,7 @@
 Package: getopt
 Type: Package
 Title: C-Like 'getopt' Behavior
-Version: 1.20.1
+Version: 1.20.2
 Author: Allen Day.
     Contributions from Trevor L Davis and Roman Zenka.
 Maintainer: Trevor L Davis <trevor.l.davis@gmail.com>
@@ -17,6 +17,6 @@ License: GPL (>= 2)
 Suggests: testthat
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-11-29 22:23:04 UTC; trevorld
+Packaged: 2018-02-16 04:46:12 UTC; trevorld
 Repository: CRAN
-Date/Publication: 2017-11-29 23:47:17 UTC
+Date/Publication: 2018-02-16 11:18:58 UTC
