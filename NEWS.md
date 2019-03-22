@@ -1,6 +1,12 @@
+getopt 1.20.3
+=============
+* Now by default ``getopt`` won't override a user specified ``opt`` argument if ``argv`` is in the global environment.
+  Will continue to use ``argv`` as a default for ``opt`` if it is in the global environment and the user does not specify an ``opt`` argument (for ``littler`` compatibility).
+
 getopt 1.20.2
 =============
 * Now allows one to pass an empty string to a character option.
+  Thanks Matthew Flickinger for bug report.
 
 getopt 1.20.1
 =============
