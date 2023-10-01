@@ -1,26 +1,30 @@
+Encoding: UTF-8
 Package: getopt
 Type: Package
 Title: C-Like 'getopt' Behavior
-Version: 1.20.3
-Authors@R: c(person("Trevor L", "Davis", role=c("aut", "cre"), email="trevor.l.davis@gmail.com"),
+Version: 1.20.4
+Authors@R: c(person("Trevor L", "Davis", role=c("aut", "cre"),
+             email="trevor.l.davis@gmail.com",
+             comment = c(ORCID = "0000-0001-6341-4639")),
     person("Allen", "Day", role="aut", comment="Original package author"),
     person("Roman", "Zenka", role="ctb"))
 URL: https://github.com/trevorld/r-getopt
 Imports: stats
 BugReports: https://github.com/trevorld/r-getopt/issues
 Description: Package designed to be used with Rscript to write
-    ``#!'' shebang scripts that accept short and long flags/options.
+    '#!' shebang scripts that accept short and long flags/options.
     Many users will prefer using instead the packages optparse or argparse
     which add extra features like automatically generated help option and usage,
     support for default values, positional argument support, etc.
 License: GPL (>= 2)
-Suggests: covr, testthat
-RoxygenNote: 6.1.1
+Suggests: testthat
+RoxygenNote: 7.2.3
+Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2019-03-22 19:27:49 UTC; trevorld
-Author: Trevor L Davis [aut, cre],
+Packaged: 2023-10-01 05:01:35 UTC; trevorld
+Author: Trevor L Davis [aut, cre] (<https://orcid.org/0000-0001-6341-4639>),
   Allen Day [aut] (Original package author),
   Roman Zenka [ctb]
 Maintainer: Trevor L Davis <trevor.l.davis@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-03-22 20:10:03 UTC
+Date/Publication: 2023-10-01 06:30:01 UTC
